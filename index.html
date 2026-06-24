@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vertical Wood-Slat Partition</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+  * { box-sizing: border-box; }
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    background: rgba(185,163,132,0.25);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #b9a384;
+    cursor: pointer;
+  }
+  select {
+    background: rgba(22,20,17,0.8);
+    border: 1px solid rgba(185,163,132,0.3);
+    border-radius: 5px;
+    color: #f3ede2;
+    font-size: 12px;
+    padding: 5px 8px;
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  select option { background: #1c1a17; }
+  .toggle-btn {
+    background: rgba(185,163,132,0.12);
+    border: 1px solid rgba(185,163,132,0.25);
+    border-radius: 5px;
+    color: #9a917f;
+    font-size: 11px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s;
+    width: 100%;
+    text-align: center;
+  }
+  .toggle-btn.active {
+    background: rgba(185,163,132,0.28);
+    color: #f3ede2;
+    border-color: rgba(185,163,132,0.5);
+  }
+  .ctrl-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #7d7468;
+    margin-bottom: 5px;
+  }
+  .ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ctrl-val {
+    font-size: 11px;
+    color: #b9a384;
+    font-variant-numeric: tabular-nums;
+    min-width: 30px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+<div style="position:fixed; inset:0; width:100vw; height:100vh; background:radial-gradient(120% 100% at 50% 0%, #34302a 0%, #211e1a 55%, #161310 100%); font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; color:#e8e2d8;">
+
+  <div id="canvas-host" style="position:absolute; inset:0;"></div>
+
+  <!-- Title -->
+  <div style="position:absolute; top:26px; left:30px; pointer-events:none;">
+    <div style="font-size:11px; letter-spacing:3px; text-transform:uppercase; color:#b9a384; font-weight:600;">3D Joinery Study</div>
+    <div style="font-size:26px; font-weight:300; letter-spacing:0.5px; margin-top:6px; color:#f3ede2;">Vertical Wood-Slat Partition</div>
+  </div>
+
+  <!-- Spec panel -->
+  <div id="spec-panel" style="position:absolute; bottom:26px; left:30px; width:248px; background:rgba(22,20,17,0.72); backdrop-filter:blur(10px); border:1px solid rgba(185,163,132,0.22); border-radius:10px; padding:18px 20px;">
+    <div style="font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:#b9a384; font-weight:600; margin-bottom:12px;">Specification</div>
+    <div style="display:flex; flex-direction:column; gap:9px; font-size:12.5px;">
+      <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Overall height</span><span style="color:#f3ede2; font-variant-numeric:tabular-nums;">243.5 cm</span></div>
+      <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Base plinth</span><span style="color:#f3ede2; font-variant-numeric:tabular-nums;">65 × 20 × 20</span></div>
+      <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Slat section</span><span id="spec-section" style="color:#f3ede2; font-variant-numeric:tabular-nums;"></span></div>
+      <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Gap between slats</span><span id="spec-gap" style="color:#f3ede2; font-variant-numeric:tabular-nums;"></span></div>
+      <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Slat count</span><span id="spec-count" style="color:#f3ede2; font-variant-numeric:tabular-nums;"></span></div>
+      <div style="display:flex; justify-content:space-between;"><span style="color:#9a917f;">End margin (auto)</span><span id="spec-margin" style="color:#f3ede2; font-variant-numeric:tabular-nums;"></span></div>
+    </div>
+  </div>
+
+  <!-- Controls panel -->
+  <div style="position:absolute; top:26px; right:30px; width:210px; background:rgba(22,20,17,0.72); backdrop-filter:blur(10px); border:1px solid rgba(185,163,132,0.22); border-radius:10px; padding:18px 20px; display:flex; flex-direction:column; gap:16px;">
+    <div style="font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:#b9a384; font-weight:600;">Controls</div>
+
+    <div>
+      <div class="ctrl-label">Slat Width</div>
+      <div class="ctrl-row">
+        <input type="range" id="sw" min="1" max="12" step="0.5" value="2.5">
+        <span class="ctrl-val" id="sw-val">2.5</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="ctrl-label">Slat Depth</div>
+      <div class="ctrl-row">
+        <input type="range" id="sd" min="2" max="20" step="0.5" value="5">
+        <span class="ctrl-val" id="sd-val">5</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="ctrl-label">Depth Offset</div>
+      <div class="ctrl-row">
+        <input type="range" id="so" min="0" max="15" step="0.5" value="0">
+        <span class="ctrl-val" id="so-val">0</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="ctrl-label">Gap</div>
+      <div class="ctrl-row">
+        <input type="range" id="gap" min="1" max="15" step="0.5" value="4">
+        <span class="ctrl-val" id="gap-val">4</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="ctrl-label">Slat Count</div>
+      <div class="ctrl-row">
+        <input type="range" id="sc" min="0" max="20" step="1" value="5">
+        <span class="ctrl-val" id="sc-val">5</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="ctrl-label">Wood Tone</div>
+      <select id="tone">
+        <option value="Oak">Oak</option>
+        <option value="Walnut">Walnut</option>
+        <option value="Ash">Ash</option>
+        <option value="Smoked">Smoked</option>
+      </select>
+    </div>
+
+    <div style="display:flex; gap:8px;">
+      <div style="flex:1;">
+        <div class="ctrl-label" style="margin-bottom:6px;">Auto Rotate</div>
+        <button class="toggle-btn active" id="btn-rotate">On</button>
+      </div>
+      <div style="flex:1;">
+        <div class="ctrl-label" style="margin-bottom:6px;">Spec Panel</div>
+        <button class="toggle-btn active" id="btn-spec">On</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hint -->
+  <div style="position:absolute; bottom:30px; right:30px; font-size:11px; letter-spacing:1px; color:#7d7468; pointer-events:none;">drag to orbit · scroll to zoom</div>
+</div>
+
+<script>
+(function () {
+  const T = window.THREE;
+
+  // State
+  const props = {
+    slatWidth: 2.5,
+    slatDepth: 5,
+    slatOffset: 0,
+    gap: 4,
+    slatCount: 5,
+    woodTone: 'Oak',
+    autoRotate: true,
+    showSpec: true,
+  };
+
+  // ---- layout math ----
+  function layout() {
+    const baseLen = 65;
+    const pitch = props.slatWidth + props.gap;
+    const slatCount = props.slatCount;
+    const used = slatCount > 0 ? (slatCount + 1) * props.gap + slatCount * props.slatWidth : 0;
+    const endMargin = Math.max(0, baseLen - used);
+    return { baseLen, pitch, slatCount, endMargin };
+  }
+
+  function fmt(n) { return (Math.round(n * 100) / 100).toString(); }
+
+  function updateSpec() {
+    const L = layout();
+    document.getElementById('spec-section').textContent = fmt(props.slatWidth) + ' × ' + fmt(props.slatDepth) + ' cm';
+    document.getElementById('spec-gap').textContent = fmt(props.gap) + ' cm';
+    document.getElementById('spec-count').textContent = L.slatCount + ' slats';
+    document.getElementById('spec-margin').textContent = fmt(L.endMargin) + ' cm';
+  }
+
+  // ---- wood palettes ----
+  function palette() {
+    if (props.woodTone === 'Walnut') return { base: '#5d3f29', grain: '#3a2414', light: '#7c5836', rough: 0.55 };
+    if (props.woodTone === 'Ash')    return { base: '#cdb791', grain: '#9c7f55', light: '#e3d3b3', rough: 0.62 };
+    if (props.woodTone === 'Smoked') return { base: '#3a342e', grain: '#211d18', light: '#52493f', rough: 0.5 };
+    return { base: '#bd8e57', grain: '#7c5128', light: '#d8b787', rough: 0.58 }; // Oak
+  }
+
+  function woodTexture(renderer) {
+    const p = palette();
+    const w = 320, h = 1280;
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = p.base; ctx.fillRect(0, 0, w, h);
+    const g = ctx.createLinearGradient(0, 0, w, 0);
+    g.addColorStop(0, 'rgba(255,255,255,0.06)');
+    g.addColorStop(0.5, 'rgba(0,0,0,0.05)');
+    g.addColorStop(1, 'rgba(255,255,255,0.04)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    const draw = (count, color, maxAlpha, wMin, wMax, seed) => {
+      // deterministic grain lines using a simple LCG
+      let s = seed;
+      const rand = () => { s = (s * 1664525 + 1013904223) & 0xffffffff; return (s >>> 0) / 0xffffffff; };
+      for (let i = 0; i < count; i++) {
+        const x0 = rand() * w;
+        const phase = rand() * Math.PI * 2;
+        const freq = 0.004 + rand() * 0.01;
+        const amp = 1 + rand() * 3;
+        ctx.beginPath();
+        ctx.lineWidth = wMin + rand() * (wMax - wMin);
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = 0.03 + rand() * maxAlpha;
+        let started = false;
+        for (let y = -10; y <= h + 10; y += 9) {
+          const drift = (x0 - w / 2) * 0.0006 * y;
+          const xx = x0 + Math.sin(y * freq + phase) * amp + drift;
+          if (!started) { ctx.moveTo(xx, y); started = true; } else ctx.lineTo(xx, y);
+        }
+        ctx.stroke();
+      }
+    };
+    draw(190, p.grain, 0.10, 0.4, 1.1, 42);
+    draw(70,  p.light, 0.07, 0.5, 1.4, 137);
+    draw(40,  p.grain, 0.16, 0.6, 1.8, 251);
+    ctx.globalAlpha = 0.05;
+    let sp = 999;
+    const sr = () => { sp = (sp * 1664525 + 1013904223) & 0xffffffff; return (sp >>> 0) / 0xffffffff; };
+    for (let i = 0; i < 2600; i++) {
+      ctx.fillStyle = sr() > 0.5 ? p.grain : p.light;
+      ctx.fillRect(sr() * w, sr() * h, 1, 1 + sr());
+    }
+    ctx.globalAlpha = 1;
+    const tex = new T.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = T.RepeatWrapping;
+    tex.encoding = T.sRGBEncoding;
+    tex.anisotropy = renderer ? renderer.capabilities.getMaxAnisotropy() : 8;
+    return tex;
+  }
+
+  function woodMaterial(realH, tileH, renderer, hGrain) {
+    const p = palette();
+    const tex = woodTexture(renderer);
+    if (hGrain) {
+      tex.repeat.set(Math.max(1, realH / tileH), 1);
+      tex.rotation = Math.PI / 2;
+      tex.center.set(0.5, 0.5);
+    } else {
+      tex.repeat.set(1, Math.max(1, realH / tileH));
+    }
+    return new T.MeshStandardMaterial({ map: tex, roughness: p.rough, metalness: 0.04 });
+  }
+
+  // ---- Three.js init ----
+  const host = document.getElementById('canvas-host');
+  const W = host.clientWidth || window.innerWidth;
+  const H = host.clientHeight || window.innerHeight;
+
+  const renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(W, H);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = T.PCFSoftShadowMap;
+  renderer.outputEncoding = T.sRGBEncoding;
+  renderer.toneMapping = T.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.92;
+  host.appendChild(renderer.domElement);
+
+  const scene = new T.Scene();
+
+  const camera = new T.PerspectiveCamera(34, W / H, 1, 5000);
+  camera.position.set(300, 215, 390);
+
+  const controls = new T.OrbitControls(camera, renderer.domElement);
+  controls.target.set(55, 122, 10);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 120;
+  controls.maxDistance = 900;
+  controls.maxPolarAngle = Math.PI / 2 + 0.04;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.7;
+  controls.update();
+
+  // Lighting
+  scene.add(new T.HemisphereLight(0xf3e9d8, 0x2a2620, 0.32));
+  scene.add(new T.AmbientLight(0xffffff, 0.10));
+
+  const key = new T.DirectionalLight(0xfff1da, 1.05);
+  key.position.set(180, 340, 240);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  key.shadow.bias = -0.0004;
+  const s = key.shadow.camera;
+  s.left = -160; s.right = 220; s.top = 320; s.bottom = -30; s.near = 1; s.far = 1200;
+  s.updateProjectionMatrix();
+  scene.add(key);
+
+  const fill = new T.DirectionalLight(0xbcd0ff, 0.22);
+  fill.position.set(-160, 140, 120);
+  scene.add(fill);
+
+  const rim = new T.DirectionalLight(0xffd9a6, 0.4);
+  rim.position.set(-60, 220, -200);
+  scene.add(rim);
+
+  const ground = new T.Mesh(new T.PlaneGeometry(4000, 4000), new T.ShadowMaterial({ opacity: 0.34 }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // ---- Model ----
+  let modelGroup = null;
+
+  function buildModel() {
+    if (modelGroup) {
+      scene.remove(modelGroup);
+      modelGroup.traverse(o => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          if (o.material.map) o.material.map.dispose();
+          o.material.dispose();
+        }
+      });
+    }
+
+    const grp = new T.Group();
+    const totalH = 243.5;
+    const baseH = 20, baseD = 20;
+    const L = layout();
+    const { baseLen, pitch, slatCount } = L;
+    const slatW = props.slatWidth, slatD = props.slatDepth;
+    const panelW = 45, panelD = 20;
+    const slatH = totalH - baseH;
+    const baseX0 = panelW;
+
+    // Solid end panel
+    const panelMat = woodMaterial(totalH, 140, renderer, false);
+    const panel = new T.Mesh(new T.BoxGeometry(panelW, totalH, panelD), panelMat);
+    panel.position.set(panelW / 2, totalH / 2, panelD / 2);
+    panel.castShadow = panel.receiveShadow = true;
+    grp.add(panel);
+
+    // Base plinth
+    const baseMat = woodMaterial(baseLen, 90, renderer, true);
+    const base = new T.Mesh(new T.BoxGeometry(baseLen, baseH, baseD), baseMat);
+    base.position.set(baseX0 + baseLen / 2, baseH / 2, baseD / 2);
+    base.castShadow = base.receiveShadow = true;
+    grp.add(base);
+
+    // Vertical slats
+    const slatGeo = new T.BoxGeometry(slatW, slatH, slatD);
+    for (let i = 0; i < slatCount; i++) {
+      const m = woodMaterial(slatH, 130, renderer, false);
+      const slat = new T.Mesh(slatGeo, m);
+      const x = baseX0 + props.gap + slatW / 2 + i * pitch;
+      const slatZ = baseD - props.slatOffset - slatD / 2;
+      slat.position.set(x, baseH + slatH / 2, slatZ);
+      slat.castShadow = slat.receiveShadow = true;
+      grp.add(slat);
+    }
+
+    modelGroup = grp;
+    scene.add(grp);
+  }
+
+  buildModel();
+  updateSpec();
+
+  // ---- Render loop ----
+  (function loop() {
+    requestAnimationFrame(loop);
+    controls.update();
+    renderer.render(scene, camera);
+  })();
+
+  // ---- Resize ----
+  window.addEventListener('resize', () => {
+    const nw = host.clientWidth, nh = host.clientHeight;
+    camera.aspect = nw / nh;
+    camera.updateProjectionMatrix();
+    renderer.setSize(nw, nh);
+  });
+
+  // ---- Controls wiring ----
+  function bindSlider(id, valId, propKey) {
+    const el = document.getElementById(id);
+    const val = document.getElementById(valId);
+    el.addEventListener('input', () => {
+      props[propKey] = parseFloat(el.value);
+      val.textContent = el.value;
+      buildModel();
+      updateSpec();
+    });
+  }
+
+  const soSlider = document.getElementById('so');
+  const soVal = document.getElementById('so-val');
+
+  function updateOffsetMax() {
+    const max = Math.max(0, 20 - props.slatDepth);
+    soSlider.max = max;
+    if (props.slatOffset > max) {
+      props.slatOffset = max;
+      soSlider.value = max;
+      soVal.textContent = max;
+    }
+  }
+
+  bindSlider('sw', 'sw-val', 'slatWidth');
+
+  document.getElementById('sd').addEventListener('input', e => {
+    props.slatDepth = parseFloat(e.target.value);
+    document.getElementById('sd-val').textContent = e.target.value;
+    updateOffsetMax();
+    buildModel();
+    updateSpec();
+  });
+
+  soSlider.addEventListener('input', () => {
+    props.slatOffset = parseFloat(soSlider.value);
+    soVal.textContent = soSlider.value;
+    buildModel();
+  });
+
+  bindSlider('gap', 'gap-val', 'gap');
+  bindSlider('sc', 'sc-val', 'slatCount');
+
+  updateOffsetMax();
+
+  document.getElementById('tone').addEventListener('change', e => {
+    props.woodTone = e.target.value;
+    buildModel();
+  });
+
+  const btnRotate = document.getElementById('btn-rotate');
+  btnRotate.addEventListener('click', () => {
+    props.autoRotate = !props.autoRotate;
+    controls.autoRotate = props.autoRotate;
+    btnRotate.textContent = props.autoRotate ? 'On' : 'Off';
+    btnRotate.classList.toggle('active', props.autoRotate);
+  });
+
+  const btnSpec = document.getElementById('btn-spec');
+  const specPanel = document.getElementById('spec-panel');
+  btnSpec.addEventListener('click', () => {
+    props.showSpec = !props.showSpec;
+    specPanel.style.display = props.showSpec ? 'block' : 'none';
+    btnSpec.textContent = props.showSpec ? 'On' : 'Off';
+    btnSpec.classList.toggle('active', props.showSpec);
+  });
+})();
+</script>
+</body>
+</html>
