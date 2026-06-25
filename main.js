@@ -221,6 +221,13 @@
   floor.receiveShadow = true;
   scene.add(floor);
 
+  // Room drop ceiling at 265 cm (partition slats reach 243.5 — two distinct levels)
+  const dropCeilMat = new T.MeshStandardMaterial({ color: 0xf5f4f2, roughness: 0.96, metalness: 0 });
+  const dropCeil = new T.Mesh(new T.PlaneGeometry(720, 940), dropCeilMat);
+  dropCeil.rotation.x = Math.PI / 2;
+  dropCeil.position.set(95, 265, 350);
+  scene.add(dropCeil);
+
   // Divider wall: left section is fixed (222 cm); right section depends on base length.
   // 20 cm thick to match base depth — front faces coplanar at z=20.
   const divL = new T.Mesh(new T.BoxGeometry(222, 285, 20), wallMat);
@@ -318,6 +325,7 @@
 
     const grp = new T.Group();
     const totalH = 243.5;
+    const roomCeilH = 265;
     const baseH = 20, baseD = 20;
     const L = layout();
     const { baseLen, pitch, slatCount } = L;
@@ -325,12 +333,22 @@
     const slatH = totalH - baseH;
     const baseX0 = 0;
 
+    // Base plinth
     const baseMat = woodMaterial(baseLen, 90, renderer, true);
     const base = new T.Mesh(new T.BoxGeometry(baseLen, baseH, baseD), baseMat);
     base.position.set(baseX0 + baseLen / 2, baseH / 2, baseD / 2);
     base.castShadow = base.receiveShadow = true;
     grp.add(base);
 
+    // Top cap — same footprint as base, fills gap between slat tops and room drop ceiling
+    const capH = roomCeilH - totalH;
+    const capMat = woodMaterial(baseLen, 90, renderer, true);
+    const cap = new T.Mesh(new T.BoxGeometry(baseLen, capH, baseD), capMat);
+    cap.position.set(baseX0 + baseLen / 2, totalH + capH / 2, baseD / 2);
+    cap.castShadow = cap.receiveShadow = true;
+    grp.add(cap);
+
+    // Vertical slats
     const slatGeo = new T.BoxGeometry(slatW, slatH, slatD);
     for (let i = 0; i < slatCount; i++) {
       const m = woodMaterial(slatH, 130, renderer, false);
