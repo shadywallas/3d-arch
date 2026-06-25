@@ -209,19 +209,10 @@
     const pt = new T.PointLight(0xfff8ee, 0.55, 380, 1.5);
     pt.position.set(x, y, z);
     scene.add(pt);
-    const disc = new T.Mesh(
-      new T.CircleGeometry(7, 16),
-      new T.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfff8ee, emissiveIntensity: 1.8, side: T.DoubleSide })
-    );
-    disc.rotation.x = Math.PI / 2;
-    disc.position.set(x, 278, z);
-    scene.add(disc);
   });
 
   // ---- Room geometry ----
   const wallMat  = new T.MeshStandardMaterial({ color: 0xf0ede8, roughness: 0.92, metalness: 0 });
-  const ceilMat  = new T.MeshStandardMaterial({ color: 0xf5f4f2, roughness: 0.96, metalness: 0 });
-  const corrMat  = new T.MeshStandardMaterial({ color: 0xe8e4de, roughness: 0.92, metalness: 0 });
   const floorMat = new T.MeshStandardMaterial({ map: tileTexture(), roughness: 0.86, metalness: 0.02 });
 
   const floor = new T.Mesh(new T.PlaneGeometry(720, 940), floorMat);
@@ -229,26 +220,6 @@
   floor.position.set(95, 0.5, 350);
   floor.receiveShadow = true;
   scene.add(floor);
-
-  const ceil = new T.Mesh(new T.PlaneGeometry(720, 940), ceilMat);
-  ceil.rotation.x = Math.PI / 2;
-  ceil.position.set(95, 280, 350);
-  scene.add(ceil);
-
-  const backWall = new T.Mesh(new T.BoxGeometry(720, 285, 8), wallMat);
-  backWall.position.set(95, 140, 814);
-  backWall.receiveShadow = true;
-  scene.add(backWall);
-
-  const leftWall = new T.Mesh(new T.BoxGeometry(8, 285, 940), wallMat);
-  leftWall.position.set(-226, 140, 350);
-  leftWall.receiveShadow = true;
-  scene.add(leftWall);
-
-  const rightWall = new T.Mesh(new T.BoxGeometry(8, 285, 940), wallMat);
-  rightWall.position.set(463, 140, 350);
-  rightWall.receiveShadow = true;
-  scene.add(rightWall);
 
   // Divider wall: left section is fixed (222 cm); right section depends on base length.
   // 20 cm thick to match base depth — front faces coplanar at z=20.
@@ -277,22 +248,6 @@
     }
   }
 
-  const corrWall = new T.Mesh(new T.BoxGeometry(720, 285, 8), corrMat);
-  corrWall.position.set(95, 140, -112);
-  scene.add(corrWall);
-
-  const coveMat = new T.MeshStandardMaterial({ color: 0xfafaf8, emissive: 0xfff8e8, emissiveIntensity: 0.55 });
-  const cove = new T.Mesh(new T.BoxGeometry(560, 10, 20), coveMat);
-  cove.position.set(80, 277, 755);
-  scene.add(cove);
-
-  const skirtMat = new T.MeshStandardMaterial({ color: 0xfaf8f4, roughness: 0.7 });
-  [
-    [new T.BoxGeometry(720, 7, 5), 95,   3.5, 811],
-    [new T.BoxGeometry(5, 7, 940), -223, 3.5, 350],
-  ].forEach(([geo, x, y, z]) => {
-    const m = new T.Mesh(geo, skirtMat); m.position.set(x, y, z); scene.add(m);
-  });
 
   // ---- Furniture ----
   function addM(geo, mat, x, y, z, shadow = true) {
@@ -341,9 +296,6 @@
   const artMat = new T.MeshStandardMaterial({ map: artworkTexture() });
   addM(new T.PlaneGeometry(122, 98), new T.MeshStandardMaterial({ color: 0xfaf9f7 }), 20, 170, 810, false);
   addM(new T.PlaneGeometry(110, 88), artMat, 20, 170, 811, false);
-
-  addM(new T.BoxGeometry(90, 20, 14),
-    new T.MeshStandardMaterial({ color: 0xf0ede8, roughness: 0.8 }), -224, 261, 500);
 
   const corrLight = new T.PointLight(0xfff8ee, 0.28, 200, 2);
   corrLight.position.set(55, 200, -65);
