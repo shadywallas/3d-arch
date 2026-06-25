@@ -500,6 +500,7 @@
   const PRESETS = [
     { id: 'peter', name: 'Peter', baseLen: 65, passage: 90, slatWidth: 2.5, slatDepth: 5, slatOffset: 0, gap: 4, slatCount: 7 },
     { id: 'shady', name: 'Shady', baseLen: 60, passage: 95, slatWidth: 5,   slatDepth: 8, slatOffset: 0, gap: 5, slatCount: 5, autoRotate: true },
+    { id: 'same7', name: 'Same7', baseLen: 66, passage: 90, slatWidth: 6,   slatDepth: 6, slatOffset: 0, gap: 6, slatCount: 5 },
   ];
 
   function applyPreset(preset) {
