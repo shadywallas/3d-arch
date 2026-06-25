@@ -433,14 +433,15 @@
   rightWall.receiveShadow = true;
   scene.add(rightWall);
 
-  // Divider wall with 155 cm opening (65 cm base + 90 cm walkable passage):
+  // Divider wall with 155 cm opening (65 cm base + 90 cm walkable passage).
+  // Thickness = 20 cm (matches base depth) so wall face is flush with base front face.
   // Left section: 222 cm wide, x=-222 to x=0
-  const divL = new T.Mesh(new T.BoxGeometry(222, 285, 8), wallMat);
-  divL.position.set(-111, 140, -4);
+  const divL = new T.Mesh(new T.BoxGeometry(222, 285, 20), wallMat);
+  divL.position.set(-111, 140, 10);
   scene.add(divL);
   // Right section: x=155 to x=463
-  const divR = new T.Mesh(new T.BoxGeometry(308, 285, 8), wallMat);
-  divR.position.set(309, 140, -4);
+  const divR = new T.Mesh(new T.BoxGeometry(308, 285, 20), wallMat);
+  divR.position.set(309, 140, 10);
   scene.add(divR);
 
   // Corridor back wall (z=-108)
