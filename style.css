@@ -53,6 +53,32 @@ select option { background: #1c1a17; }
   border-color: rgba(185,163,132,0.5);
 }
 
+.preset-btn {
+  background: rgba(185,163,132,0.08);
+  border: 1px solid rgba(185,163,132,0.22);
+  border-radius: 6px;
+  color: #9a8f80;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  letter-spacing: 0.4px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  width: 100%;
+  text-align: left;
+}
+.preset-btn:hover {
+  background: rgba(185,163,132,0.18);
+  color: #f3ede2;
+  border-color: rgba(185,163,132,0.38);
+}
+.preset-btn.active {
+  background: rgba(185,163,132,0.26);
+  color: #f3ede2;
+  border-color: rgba(185,163,132,0.52);
+}
+
 .ctrl-label {
   font-size: 10px;
   letter-spacing: 1.5px;

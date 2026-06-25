@@ -495,4 +495,43 @@
     btnSpec.textContent = props.showSpec ? 'On' : 'Off';
     btnSpec.classList.toggle('active', props.showSpec);
   });
+
+  // ---- Presets ----
+  const PRESETS = [
+    { id: 'peter', name: 'Peter', baseLen: 65, passage: 90, slatWidth: 2.5, slatDepth: 5, slatOffset: 0, gap: 4, slatCount: 7 },
+  ];
+
+  function applyPreset(preset) {
+    props.baseLen   = preset.baseLen;
+    props.passage   = preset.passage;
+    props.slatWidth = preset.slatWidth;
+    props.slatDepth = preset.slatDepth;
+    props.slatOffset = preset.slatOffset ?? 0;
+    props.gap       = preset.gap;
+    props.slatCount = preset.slatCount;
+
+    const sync = (id, valId, v) => {
+      document.getElementById(id).value = v;
+      document.getElementById(valId).textContent = v;
+    };
+    sync('bl',  'bl-val',  preset.baseLen);
+    sync('pw',  'pw-val',  preset.passage);
+    sync('sw',  'sw-val',  preset.slatWidth);
+    sync('sd',  'sd-val',  preset.slatDepth);
+    sync('so',  'so-val',  props.slatOffset);
+    sync('gap', 'gap-val', preset.gap);
+    sync('sc',  'sc-val',  preset.slatCount);
+
+    updateOffsetMax();
+    buildDivider();
+    buildModel();
+    updateSpec();
+
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('preset-' + preset.id).classList.add('active');
+  }
+
+  PRESETS.forEach(preset => {
+    document.getElementById('preset-' + preset.id).addEventListener('click', () => applyPreset(preset));
+  });
 })();
