@@ -32,17 +32,9 @@
     </div>
   </div>
 
-  <!-- Controls panel -->
+  <!-- Controls panel (slat parameters) -->
   <div style="position:absolute; top:26px; right:30px; width:210px; background:rgba(22,20,17,0.72); backdrop-filter:blur(10px); border:1px solid rgba(185,163,132,0.22); border-radius:10px; padding:18px 20px; display:flex; flex-direction:column; gap:16px;">
     <div style="font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:#b9a384; font-weight:600;">Controls</div>
-
-    <div>
-      <div class="ctrl-label">Base Length</div>
-      <div class="ctrl-row">
-        <input type="range" id="bl" min="30" max="200" step="5" value="65">
-        <span class="ctrl-val" id="bl-val">65</span>
-      </div>
-    </div>
 
     <div>
       <div class="ctrl-label">Slat Width</div>
@@ -83,6 +75,27 @@
         <span class="ctrl-val" id="sc-val">5</span>
       </div>
     </div>
+  </div>
+
+  <!-- Setup panel (room / structural settings + view toggles) -->
+  <div style="position:absolute; bottom:26px; right:30px; width:210px; background:rgba(22,20,17,0.72); backdrop-filter:blur(10px); border:1px solid rgba(185,163,132,0.22); border-radius:10px; padding:18px 20px; display:flex; flex-direction:column; gap:16px;">
+    <div style="font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:#b9a384; font-weight:600;">Setup</div>
+
+    <div>
+      <div class="ctrl-label">Base Length</div>
+      <div class="ctrl-row">
+        <input type="range" id="bl" min="30" max="200" step="5" value="65">
+        <span class="ctrl-val" id="bl-val">65</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="ctrl-label">Hall Opening</div>
+      <div class="ctrl-row">
+        <input type="range" id="pw" min="30" max="200" step="5" value="90">
+        <span class="ctrl-val" id="pw-val">90</span>
+      </div>
+    </div>
 
     <div>
       <div class="ctrl-label">Wood Tone</div>
@@ -107,7 +120,7 @@
   </div>
 
   <!-- Hint -->
-  <div style="position:absolute; bottom:30px; right:30px; font-size:11px; letter-spacing:1px; color:#6a6058; pointer-events:none; text-shadow:0 1px 3px rgba(255,255,255,0.7);">drag to orbit · scroll to zoom</div>
+  <div style="position:absolute; bottom:14px; left:50%; transform:translateX(-50%); font-size:11px; letter-spacing:1px; color:#6a6058; pointer-events:none; text-shadow:0 1px 3px rgba(255,255,255,0.7);">drag to orbit · scroll to zoom</div>
 </div>
 
 <script src="main.js"></script>

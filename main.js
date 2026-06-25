@@ -4,6 +4,7 @@
   // State
   const props = {
     baseLen: 65,
+    passage: 90,
     slatWidth: 2.5,
     slatDepth: 5,
     slatOffset: 0,
@@ -261,8 +262,8 @@
       scene.remove(dividerGroup);
       dividerGroup.traverse(o => { if (o.geometry) o.geometry.dispose(); });
     }
-    // Opening = base length + 90 cm walkable, right edge at x=463 (right wall centre).
-    const openingEnd = props.baseLen + 90;
+    // Opening = base length + walkable passage, right edge at x=463 (right wall centre).
+    const openingEnd = props.baseLen + props.passage;
     const divRW = Math.max(0, 463 - openingEnd);
     if (divRW > 0) {
       const divR = new T.Mesh(new T.BoxGeometry(divRW, 285, 20), wallMat);
@@ -442,6 +443,13 @@
     document.getElementById('bl-val').textContent = e.target.value;
     buildDivider();
     buildModel();
+    updateSpec();
+  });
+
+  document.getElementById('pw').addEventListener('input', e => {
+    props.passage = parseInt(e.target.value, 10);
+    document.getElementById('pw-val').textContent = e.target.value;
+    buildDivider();
     updateSpec();
   });
 
