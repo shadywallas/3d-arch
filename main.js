@@ -240,19 +240,29 @@
       scene.remove(dividerGroup);
       dividerGroup.traverse(o => { if (o.geometry) o.geometry.dispose(); });
     }
-    // Opening = base length + walkable passage, right edge at x=463 (right wall centre).
+    const grp = new T.Group();
+
+    // Right divider wall section — starts after the full opening (base + passage).
     const openingEnd = props.baseLen + props.passage;
     const divRW = Math.max(0, 463 - openingEnd);
     if (divRW > 0) {
       const divR = new T.Mesh(new T.BoxGeometry(divRW, 285, 20), wallMat);
       divR.position.set(openingEnd + divRW / 2, 140, 10);
-      const grp = new T.Group();
       grp.add(divR);
-      dividerGroup = grp;
-      scene.add(grp);
-    } else {
-      dividerGroup = null;
     }
+
+    // Drop ceiling soffit above the opening — white, from slat tops (243.5) to room ceiling (265).
+    const slatTop = 243.5;
+    const roomCeilH = 265;
+    const soffitH = roomCeilH - slatTop;
+    const openingW = props.baseLen + props.passage;
+    const soffit = new T.Mesh(new T.BoxGeometry(openingW, soffitH, 20), wallMat);
+    soffit.position.set(openingW / 2, slatTop + soffitH / 2, 10);
+    soffit.receiveShadow = true;
+    grp.add(soffit);
+
+    dividerGroup = grp;
+    scene.add(grp);
   }
 
 
@@ -325,7 +335,6 @@
 
     const grp = new T.Group();
     const totalH = 243.5;
-    const roomCeilH = 265;
     const baseH = 20, baseD = 20;
     const L = layout();
     const { baseLen, pitch, slatCount } = L;
@@ -339,14 +348,6 @@
     base.position.set(baseX0 + baseLen / 2, baseH / 2, baseD / 2);
     base.castShadow = base.receiveShadow = true;
     grp.add(base);
-
-    // Top cap — same footprint as base, fills gap between slat tops and room drop ceiling
-    const capH = roomCeilH - totalH;
-    const capMat = woodMaterial(baseLen, 90, renderer, true);
-    const cap = new T.Mesh(new T.BoxGeometry(baseLen, capH, baseD), capMat);
-    cap.position.set(baseX0 + baseLen / 2, totalH + capH / 2, baseD / 2);
-    cap.castShadow = cap.receiveShadow = true;
-    grp.add(cap);
 
     // Vertical slats
     const slatGeo = new T.BoxGeometry(slatW, slatH, slatD);
