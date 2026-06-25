@@ -499,6 +499,7 @@
   // ---- Presets ----
   const PRESETS = [
     { id: 'peter', name: 'Peter', baseLen: 65, passage: 90, slatWidth: 2.5, slatDepth: 5, slatOffset: 0, gap: 4, slatCount: 7 },
+    { id: 'shady', name: 'Shady', baseLen: 60, passage: 95, slatWidth: 5,   slatDepth: 8, slatOffset: 0, gap: 5, slatCount: 5, autoRotate: true },
   ];
 
   function applyPreset(preset) {
@@ -521,6 +522,14 @@
     sync('so',  'so-val',  props.slatOffset);
     sync('gap', 'gap-val', preset.gap);
     sync('sc',  'sc-val',  preset.slatCount);
+
+    if (preset.autoRotate !== undefined) {
+      props.autoRotate = preset.autoRotate;
+      controls.autoRotate = preset.autoRotate;
+      const btnR = document.getElementById('btn-rotate');
+      btnR.textContent = preset.autoRotate ? 'On' : 'Off';
+      btnR.classList.toggle('active', preset.autoRotate);
+    }
 
     updateOffsetMax();
     buildDivider();
