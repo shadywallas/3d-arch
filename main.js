@@ -3,6 +3,7 @@
 
   // State
   const props = {
+    baseLen: 65,
     slatWidth: 2.5,
     slatDepth: 5,
     slatOffset: 0,
@@ -15,7 +16,7 @@
 
   // ---- Layout math ----
   function layout() {
-    const baseLen = 65;
+    const baseLen = props.baseLen;
     const pitch = props.slatWidth + props.gap;
     const slatCount = props.slatCount;
     const used = slatCount > 0 ? (slatCount + 1) * props.gap + slatCount * props.slatWidth : 0;
@@ -27,6 +28,7 @@
 
   function updateSpec() {
     const L = layout();
+    document.getElementById('spec-base').textContent = props.baseLen + ' × 20 × 20';
     document.getElementById('spec-section').textContent = fmt(props.slatWidth) + ' × ' + fmt(props.slatDepth) + ' cm';
     document.getElementById('spec-gap').textContent = fmt(props.gap) + ' cm';
     document.getElementById('spec-count').textContent = L.slatCount + ' slats';
@@ -247,15 +249,32 @@
   rightWall.receiveShadow = true;
   scene.add(rightWall);
 
-  // Divider wall: 155 cm opening (65 cm base + 90 cm walkable).
+  // Divider wall: left section is fixed (222 cm); right section depends on base length.
   // 20 cm thick to match base depth — front faces coplanar at z=20.
   const divL = new T.Mesh(new T.BoxGeometry(222, 285, 20), wallMat);
   divL.position.set(-111, 140, 10);
   scene.add(divL);
 
-  const divR = new T.Mesh(new T.BoxGeometry(308, 285, 20), wallMat);
-  divR.position.set(309, 140, 10);
-  scene.add(divR);
+  let dividerGroup = null;
+  function buildDivider() {
+    if (dividerGroup) {
+      scene.remove(dividerGroup);
+      dividerGroup.traverse(o => { if (o.geometry) o.geometry.dispose(); });
+    }
+    // Opening = base length + 90 cm walkable, right edge at x=463 (right wall centre).
+    const openingEnd = props.baseLen + 90;
+    const divRW = Math.max(0, 463 - openingEnd);
+    if (divRW > 0) {
+      const divR = new T.Mesh(new T.BoxGeometry(divRW, 285, 20), wallMat);
+      divR.position.set(openingEnd + divRW / 2, 140, 10);
+      const grp = new T.Group();
+      grp.add(divR);
+      dividerGroup = grp;
+      scene.add(grp);
+    } else {
+      dividerGroup = null;
+    }
+  }
 
   const corrWall = new T.Mesh(new T.BoxGeometry(720, 285, 8), corrMat);
   corrWall.position.set(95, 140, -112);
@@ -374,6 +393,7 @@
     scene.add(grp);
   }
 
+  buildDivider();
   buildModel();
   updateSpec();
 
@@ -416,6 +436,14 @@
       soVal.textContent = max;
     }
   }
+
+  document.getElementById('bl').addEventListener('input', e => {
+    props.baseLen = parseInt(e.target.value, 10);
+    document.getElementById('bl-val').textContent = e.target.value;
+    buildDivider();
+    buildModel();
+    updateSpec();
+  });
 
   bindSlider('sw', 'sw-val', 'slatWidth');
 

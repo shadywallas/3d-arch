@@ -24,7 +24,7 @@
     <div style="font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:#b9a384; font-weight:600; margin-bottom:12px;">Specification</div>
     <div style="display:flex; flex-direction:column; gap:9px; font-size:12.5px;">
       <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Overall height</span><span style="color:#f3ede2; font-variant-numeric:tabular-nums;">243.5 cm</span></div>
-      <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Base plinth</span><span style="color:#f3ede2; font-variant-numeric:tabular-nums;">65 × 20 × 20</span></div>
+      <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Base plinth</span><span id="spec-base" style="color:#f3ede2; font-variant-numeric:tabular-nums;">65 × 20 × 20</span></div>
       <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Slat section</span><span id="spec-section" style="color:#f3ede2; font-variant-numeric:tabular-nums;"></span></div>
       <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Gap between slats</span><span id="spec-gap" style="color:#f3ede2; font-variant-numeric:tabular-nums;"></span></div>
       <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;"><span style="color:#9a917f;">Slat count</span><span id="spec-count" style="color:#f3ede2; font-variant-numeric:tabular-nums;"></span></div>
@@ -35,6 +35,14 @@
   <!-- Controls panel -->
   <div style="position:absolute; top:26px; right:30px; width:210px; background:rgba(22,20,17,0.72); backdrop-filter:blur(10px); border:1px solid rgba(185,163,132,0.22); border-radius:10px; padding:18px 20px; display:flex; flex-direction:column; gap:16px;">
     <div style="font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:#b9a384; font-weight:600;">Controls</div>
+
+    <div>
+      <div class="ctrl-label">Base Length</div>
+      <div class="ctrl-row">
+        <input type="range" id="bl" min="30" max="200" step="5" value="65">
+        <span class="ctrl-val" id="bl-val">65</span>
+      </div>
+    </div>
 
     <div>
       <div class="ctrl-label">Slat Width</div>
